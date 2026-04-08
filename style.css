@@ -1,323 +1,654 @@
-body {
+/* ----- Reset: Remove default spacing ----- */
+* {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ----- Body (whole page background) ----- */
+body {
     background-color: #fafafa;
     color: #333333;
     font-family: 'Inter', sans-serif;
+    font-size: 16px;
 }
 
-/* Navbar */
+/* The whole navbar row */
 .top-navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 120px;
     background-color: #e63946;
-    border-bottom: 1px solid #d62828;
-    box-shadow: 0 4px 15px rgba(230, 57, 70, 0.2);
+    padding-top: 16px;
+    padding-bottom: 16px;
+    padding-left: 60px;
+    padding-right: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 100;
 }
 
+/* The brand name "DishCraft" on the left */
 .brand-name {
+    color: #ffffff;
     font-size: 24px;
-    font-weight: 700;
-    color: #ffffff;
-    letter-spacing: 0.5px;
+    font-weight: bold;
 }
 
-.nav-links {
+/* The wrapper for the right side of the navbar */
+.nav-right {
     display: flex;
-    gap: 30px;
-}
-
-.nav-links a {
-    text-decoration: none;
-    color: #ffffff;
-    font-size: 16px;
-    font-weight: 500;
-    transition: color 0.2s ease;
-}
-
-.nav-links a:hover {
-    color: #ffe0e0;
-}
-
-/* Heading Section */
-header {
-    padding: 80px 120px;
-    background-color: #ffffff;
-    border-bottom: 1px solid #eaeaea;
-    display: flex;
-    justify-content: space-between;
     align-items: center;
     gap: 40px;
 }
 
+/* The nav links container */
+.nav-links {
+    display: flex;
+}
+
+/* The Home link on the right */
+.nav-links a {
+    color: #ffffff;
+    font-size: 16px;
+    text-decoration: none;
+}
+
+/* Link color when mouse hovers over it */
+.nav-links a:hover {
+    color: #ffe0e0;
+}
+
+
+/* The wrapper that holds the label and toggle */
+.dark-toggle-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* The "Dark" text label */
+.toggle-label {
+    color: #ffffff;
+    font-size: 14px;
+}
+
+/* The outer box of the toggle switch */
+.toggle-switch {
+    width: 48px;
+    height: 26px;
+    position: relative;
+    cursor: pointer;
+}
+
+/* Hide the real checkbox (we style only the visual slider) */
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* The sliding track (grey pill shape) */
+.toggle-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.35);
+    border-radius: 34px;
+}
+
+/* The round white circle inside the track */
+.toggle-slider::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transition: transform 0.3s;
+}
+
+/* When checkbox is checked: slide the circle to the right */
+.toggle-switch input:checked+.toggle-slider::before {
+    transform: translateX(22px);
+}
+
+/* Darken the track when checked */
+.toggle-switch input:checked+.toggle-slider {
+    background-color: rgba(255, 255, 255, 0.6);
+}
+
+
+/* Dark page background */
+body.dark {
+    background-color: #121212;
+    color: #cccccc;
+}
+
+/* Dark navbar */
+body.dark .top-navbar {
+    background-color: #1a1a1a;
+}
+
+/* Dark header / hero area */
+body.dark header {
+    background-color: #1e1e1e;
+    border-bottom: 1px solid #2e2e2e;
+}
+
+/* Dark heading text */
+body.dark .Heading h1 {
+    color: #f0f0f0;
+}
+
+/* Dark search input box */
+body.dark #search-bar_input {
+    background-color: #2a2a2a;
+    color: #f0f0f0;
+    border: 1px solid #3a3a3a;
+}
+
+/* Dark controls bar */
+body.dark .controls-bar {
+    background-color: #1e1e1e;
+    border-bottom: 1px solid #2e2e2e;
+}
+
+/* Dark filter chip buttons */
+body.dark .filter-btn {
+    background-color: #2a2a2a;
+    color: #cccccc;
+    border: 1px solid #3a3a3a;
+}
+
+/* Dark sort dropdown */
+body.dark .sort-dropdown {
+    background-color: #2a2a2a;
+    color: #f0f0f0;
+    border: 1px solid #3a3a3a;
+}
+
+/* Dark recipe cards */
+body.dark .recipe-card {
+    background-color: #1e1e1e;
+    border: 1px solid #2e2e2e;
+}
+
+/* Dark card title text */
+body.dark .recipe-content h3 {
+    color: #f0f0f0;
+}
+
+/* Dark count badge */
+body.dark .meal-count-badge {
+    background-color: #2a2a2a;
+    color: #888888;
+    border: 1px solid #3a3a3a;
+}
+
+/* Dark "ALL DISHES" heading */
+body.dark .top-bar p {
+    color: #f0f0f0;
+}
+
+
+/* The whole hero area */
+header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #eeeeee;
+    padding-top: 80px;
+    padding-bottom: 80px;
+    padding-left: 120px;
+    padding-right: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+/* Left side of hero (text and search) */
 .hero-content {
     flex: 1;
 }
 
+/* Right side of hero (food image) */
 .hero-image {
-    flex: 1.2;
+    flex: 1;
     display: flex;
     justify-content: flex-end;
 }
 
+/* The food image on the right */
 .hero-image img {
-    max-width: 100%;
+    width: 100%;
+    max-width: 500px;
     height: auto;
     border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #eeeeee;
 }
 
-/* Heading Text*/
+/* Small red subtitle text */
 .Heading h3 {
     color: #e63946;
-    letter-spacing: 2px;
+    font-size: 14px;
     font-weight: 600;
-    margin-bottom: 15px;
+    letter-spacing: 2px;
+    margin-bottom: 14px;
 }
 
+/* Big heading line 1 */
 .Heading h1 {
-    font-size: 56px;
-    font-weight: 700;
-    margin: 5px 0;
+    font-size: 52px;
+    font-weight: bold;
     color: #111111;
+    margin-bottom: 5px;
 }
 
+/* Big heading line 2 (the red one) */
 .Heading h1:nth-child(3) {
     color: #e63946;
 }
 
-/* Input Bar */
+
+/* Gap above the search row */
 .search-bar {
     margin-top: 40px;
 }
 
+/* Row that holds input + button side by side */
 #search_input {
     display: flex;
-    gap: 15px;
+    gap: 12px;
 }
 
+/* The text input box */
 #search-bar_input {
     flex: 1;
-    padding: 16px 20px;
-    font-size: 16px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-size: 15px;
     border-radius: 25px;
     border: 1px solid #dddddd;
     background-color: #ffffff;
     color: #333333;
     outline: none;
-    transition: 0.2s;
 }
 
+/* Make input border red when user clicks on it */
 #search-bar_input:focus {
     border-color: #e63946;
-    box-shadow: 0 0 8px rgba(230, 57, 70, 0.2);
 }
 
+/* The Search button */
 #search_input button {
-    padding: 16px 35px;
-    font-size: 16px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    padding-left: 30px;
+    padding-right: 30px;
+    font-size: 15px;
     font-weight: bold;
     border-radius: 25px;
     border: none;
     background-color: #e63946;
     color: #ffffff;
     cursor: pointer;
-    transition: 0.2s;
 }
 
+/* Search button hover effect */
 #search_input button:hover {
     background-color: #d62828;
-    box-shadow: 0 4px 10px rgba(230, 57, 70, 0.3);
-    transform: translateY(-2px);
 }
 
 
-
-/* Main Content */
-.container {
+/* The whole bar below the hero */
+.controls-bar {
+    background-color: #ffffff;
+    border-bottom: 1px solid #eeeeee;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    padding-left: 60px;
+    padding-right: 60px;
     display: flex;
-    gap: 40px;
-    padding: 60px 120px;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    position: sticky;
+    top: 58px;
+    z-index: 90;
 }
 
+/* Left side: Filter label + chips */
+.filter-section {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* Small label text "FILTER:" and "SORT BY:" */
+.controls-label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #999999;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* The row of chip buttons */
+.filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* Each filter chip button (like "All", "Chicken", etc.) */
+.filter-btn {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 16px;
+    padding-right: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 20px;
+    border: 1px solid #dddddd;
+    background-color: #f5f5f5;
+    color: #444444;
+    cursor: pointer;
+}
+
+/* Chip hover */
+.filter-btn:hover {
+    border-color: #e63946;
+    color: #e63946;
+    background-color: #fff5f5;
+}
+
+/* The currently selected chip */
+.filter-btn.active {
+    background-color: #e63946;
+    color: #ffffff;
+    border-color: #e63946;
+}
+
+/* Right side: Sort label + dropdown */
+.sort-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* The sort dropdown */
+.sort-dropdown {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 14px;
+    padding-right: 14px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    border-radius: 20px;
+    border: 1px solid #dddddd;
+    background-color: #ffffff;
+    color: #333333;
+    cursor: pointer;
+    outline: none;
+}
+
+/* Dropdown border when clicked */
+.sort-dropdown:focus {
+    border-color: #e63946;
+}
+
+/* Outer wrapper for cards area */
+.container {
+    padding-top: 40px;
+    padding-bottom: 60px;
+    padding-left: 60px;
+    padding-right: 60px;
+}
+
+/* The inner box that holds everything */
 .left-main {
-    flex: 2;
     display: flex;
     flex-direction: column;
-    height: 700px;
+    min-height: 400px;
 }
 
-
-
+/* ---- Top bar: "ALL DISHES" + count badge ---- */
 .top-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    margin-bottom: 24px;
 }
 
+/* "ALL DISHES" heading */
 .top-bar p {
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: bold;
     color: #111111;
     letter-spacing: 3px;
     text-transform: uppercase;
     margin: 0;
     border-bottom: 2px solid #e63946;
-    padding-bottom: 5px;
+    padding-bottom: 4px;
 }
 
-.top-bar span {
-    color: #e63946;
-    font-weight: bold;
+/* The small pill badge showing count (e.g. "65 dishes") */
+.meal-count-badge {
+    font-size: 13px;
+    font-weight: 600;
+    color: #777777;
+    background-color: #f5f5f5;
+    border: 1px solid #eeeeee;
+    border-radius: 20px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 12px;
+    padding-right: 12px;
 }
 
+
+/* The grid that holds all cards */
 .straight_caraousel {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
+    gap: 24px;
     overflow-y: auto;
-    padding-right: 15px;
-    height: 100%;
+    max-height: 78vh;
+    padding-right: 8px;
 }
 
+/* One recipe card */
 .recipe-card {
     background-color: #ffffff;
-    border-radius: 12px;
     border: 1px solid #eeeeee;
-    padding: 15px;
+    border-radius: 12px;
+    padding: 14px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
-    transition: 0.3s;
 }
 
+/* Card hover: lift up slightly */
 .recipe-card:hover {
-    transform: translateY(-5px);
     border-color: #e63946;
-    box-shadow: 0 8px 15px rgba(230, 57, 70, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(230, 57, 70, 0.15);
 }
 
+/* Image container on each card */
 .recipe-image {
     width: 100%;
     height: 160px;
     overflow: hidden;
     border-radius: 8px;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     background-color: #f0f0f0;
 }
 
+/* The actual image inside the card */
 .recipe-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: 0.3s;
 }
 
-.recipe-card:hover .recipe-image img {
-    transform: scale(1.03);
-}
-
+/* The text content below the image */
 .recipe-content {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding-top: 5px;
+    gap: 6px;
+    flex: 1;
 }
 
+/* Small red category label (like "CHICKEN") */
 .recipe-content .cuisine {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 11px;
+    font-weight: bold;
     color: #e63946;
     letter-spacing: 1px;
     text-transform: uppercase;
     margin: 0;
 }
 
+/* The meal name */
 .recipe-content h3 {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 20px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: bold;
     color: #111111;
-    letter-spacing: 0.5px;
-    margin: 0 0 10px 0;
+    margin: 0;
+    line-height: 1.4;
 }
 
+/* Row at the bottom of the card holding the button */
 .recipe-det {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-    color: #777777;
-    margin-top: auto;
+    justify-content: flex-end;
+    margin-top: 10px;
 }
 
-.recipe-det a {
-    color: #e63946;
-    text-decoration: none;
-    font-weight: 600;
+/* "View →" button on each card */
+.view-btn {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 18px;
+    padding-right: 18px;
+    background-color: #e63946;
+    color: #ffffff;
+    border: none;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
 }
 
-.recipe-det a:hover {
-    text-decoration: underline;
+/* Button hover */
+.view-btn:hover {
+    background-color: #d62828;
 }
 
 
-
-
-/* Responsiveness */
 @media (max-width: 1024px) {
-    header, .container {
-        padding: 40px 60px;
-    }
-    
+
+    /* Reduce side padding on navbar */
     .top-navbar {
-        padding: 20px 60px;
+        padding-left: 30px;
+        padding-right: 30px;
     }
 
-    header, .container {
+    /* Stack the hero vertically */
+    header {
         flex-direction: column;
-        align-items: stretch;
+        padding-left: 40px;
+        padding-right: 40px;
+        padding-top: 50px;
+        padding-bottom: 50px;
     }
-    
+
+    /* Center the image */
     .hero-image {
         justify-content: center;
-        margin-top: 20px;
-    }
-    
-    .hero-image img {
-        width: 100%;
-        max-width: 550px;
     }
 
+    /* Less padding on controls bar */
+    .controls-bar {
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+
+    /* Less padding on main content */
+    .container {
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+
+    /* 2 columns instead of 3 */
     .straight_caraousel {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
+
 @media (max-width: 768px) {
-    header, .container {
-        padding: 30px 20px;
-    }
 
+    /* Smaller padding on navbar */
     .top-navbar {
-        padding: 15px 20px;
+        padding-left: 16px;
+        padding-right: 16px;
     }
 
-    .top-bar p {
-        font-size: 22px;
+    /* Smaller hero padding */
+    header {
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-top: 30px;
+        padding-bottom: 30px;
     }
 
+    /* Smaller heading */
     .Heading h1 {
-        font-size: 40px;
+        font-size: 34px;
     }
 
+    /* Stack filter and sort vertically */
+    .controls-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding-left: 16px;
+        padding-right: 16px;
+        top: 54px;
+    }
+
+    /* Sort dropdown full width on phones */
+    .sort-dropdown {
+        width: 100%;
+    }
+
+    /* Less padding on card area */
+    .container {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    /* 1 column on phones */
     .straight_caraousel {
         grid-template-columns: 1fr;
+    }
+
+    /* Smaller heading in cards section */
+    .top-bar p {
+        font-size: 18px;
+    }
+
+    /* Hide the "Dark" text on very small screens */
+    .toggle-label {
+        display: none;
     }
 }

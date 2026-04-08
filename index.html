@@ -3,22 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fork-Knife</title>
+    <title>DishCraft — Explore World Cuisines</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- Navbar -->
+    <!-- ===== Navbar ===== -->
     <nav class="top-navbar">
         <div class="brand-name">DishCraft</div>
-        <div class="nav-links">
-            <a href="#">Home</a>
-            <a href="#">Explore</a>
+
+        <div class="nav-right">
+            <div class="nav-links">
+                <a href="#">Home</a>
+            </div>
+
+            <!-- Dark Mode Toggle — grouped with Home link on the right -->
+            <div class="dark-toggle-wrapper">
+                <span class="toggle-label">🌙 Dark</span>
+                <label class="toggle-switch" for="darkModeToggle">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
         </div>
     </nav>
 
-    <!-- Heading part Starts -->
+    <!-- ===== Hero / Header Section ===== -->
     <header>
         <div class="hero-content">
             <div class="Heading">
@@ -28,7 +39,7 @@
             </div>
             <div class="search-bar">
                 <div id="search_input">
-                    <input type="text" name="search-bar_input" id="search-bar_input">
+                    <input type="text" name="search-bar_input" id="search-bar_input" placeholder="Search for a dish...">
                     <button> Search </button>
                 </div>
             </div>
@@ -37,32 +48,50 @@
             <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop" alt="Beautiful Cuisine">
         </div>
     </header>
-    <!-- heading Part Over -->
 
+    <!-- ===== Controls Bar: Category Filters + Sort ===== -->
+    <!-- This sits between the hero and the cards grid -->
+    <section class="controls-bar">
 
+        <!-- Left side: Category filter chips -->
+        <div class="filter-section">
+            <span class="controls-label">Filter:</span>
+            <div class="filter-chips" id="filter-chips-container">
+                <!-- "All" chip is always first and active by default -->
+                <button class="filter-btn active" data-category="All">All</button>
+                <!-- Other chips are injected by JS after meals load -->
+            </div>
+        </div>
 
+        <!-- Right side: Sort dropdown -->
+        <div class="sort-section">
+            <span class="controls-label">Sort by:</span>
+            <select id="sort-select" class="sort-dropdown">
+                <option value="default">Default</option>
+                <option value="az">Name: A → Z</option>
+                <option value="za">Name: Z → A</option>
+                <option value="category">Category</option>
+            </select>
+        </div>
 
-    <!-- Main Content Starts -->
+    </section>
+
+    <!-- ===== Main Cards Grid ===== -->
     <main>
         <div class="container">
-            <!-- left side -->
             <div class="left-main">
                 <div class="top-bar">
+                    <!-- This count updates dynamically via JS -->
                     <p>ALL DISHES</p>
+                    <span id="meal-count" class="meal-count-badge"></span>
                 </div>
 
                 <div class="straight_caraousel">
-                    <!-- Recipes -->
+                    <!-- Recipe cards are injected here by script.js -->
                 </div>
-
             </div>
-
-
         </div>
     </main>
-
-
-
 
     <script src="script.js"></script>
 </body>
