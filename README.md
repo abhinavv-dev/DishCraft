@@ -13,7 +13,7 @@ This project is built to strengthen core frontend development skills such as wor
 ---
 
 ## 🔌 Data Source
-This application integrates with the **TheMealDB API** to fetch recipe data dynamically.
+This application integrates with the **TheMealDB API** (https://www.themealdb.com/api/json/v1/1/search.php?f=a) to fetch recipe data dynamically.
 
 ### How the API is used:
 - Accepts user input (dish name)
