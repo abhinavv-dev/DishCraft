@@ -1,363 +1,449 @@
+// GLOBAL VARIABLES
+
 
 // This list will hold all the dishes we get from the API
+// We start with an empty list [] which means "nothing yet"
 let allMeals = [];
 
-// This keeps track of which category is currently selected (starts at "All")
+// This keeps track of which category is currently selected
+// We start with "All" so the user sees everything at first
 let activeCategory = "All";
 
-// Get the main container where we will put the meal cards
+// This is the container in our HTML where the meal cards will be placed
 const recipeContainer = document.querySelector(".straight_caraousel");
 
-// STEP 1: FETCH ALL DISHES (A-Z)
-// We need to call the API for every letter of the alphabet
+
+
+// STEP 1: FETCH DATA FROM THE API
+
+// We want to fetch recipes for every letter (a to z)
+// We split this string into an array: ["a", "b", "c", ...]
 const alphabetLetters = "abcdefghijklmnopqrstuvwxyz".split("");
 
-// Create a list of promises (requests) for each letter
+// We create a list of "Fetch Requests" for each letter
 const fetchRequests = alphabetLetters.map(function (letter) {
-    const url = "https://www.themealdb.com/api/json/v1/1/search.php?f=" + letter;
-    return fetch(url).then(function (response) {
+    // This is the website address for the specific letter
+    const apiUrl = "https://www.themealdb.com/api/json/v1/1/search.php?f=" + letter;
+
+    // We start the fetch and say: "When you get a response, turn it into JSON"
+    return fetch(apiUrl).then(function (response) {
         return response.json();
     });
 });
 
-// Wait for all 26 requests to finish
+// We wait for ALL 26 requests to finish using Promise.all
 Promise.all(fetchRequests)
     .then(function (results) {
-        // results is a list of objects, one for each letter
-        results.forEach(function (item) {
-            // Check if this letter actually has meals
-            if (item.meals !== null) {
-                // Add each meal found into our global allMeals list
-                item.meals.forEach(function (dish) {
-                    allMeals.push(dish);
+        // 'results' is a list of 26 objects (one for each letter)
+        // We use .forEach to look at each letter's data
+        results.forEach(function (data) {
+            // Check if this letter actually has any meals in it
+            if (data.meals !== null) {
+                // If there are meals, add each one to our global 'allMeals' list
+                data.meals.forEach(function (singleMeal) {
+                    allMeals.push(singleMeal);
                 });
             }
         });
 
-        // Once loaded, show the dishes and build the filter chips
+        // Once calculation is done, we display the meals on the screen
         showMeals(allMeals);
+
+        // We also build the filter buttons (category chips)
         buildFilterChips(allMeals);
 
-        console.log("Total dishes loaded: " + allMeals.length);
+        console.log("Success! Total dishes loaded: " + allMeals.length);
     })
     .catch(function (error) {
+        // If something goes wrong, we log it here
         console.log("Error loading dishes: ", error);
     });
 
 
-// STEP 2: DISPLAY DISHES ON SCREEN
 
-function showMeals(mealsList) {
-    // 1. Clear the old cards first
+// STEP 2: DISPLAY MEALS ON THE SCREEN
+
+
+function showMeals(mealsToDisplay) {
+    // 1. Clear the old content inside the recipe container
     recipeContainer.textContent = "";
 
-    // 2. Update the count badge (number of dishes found)
+    // 2. Update the "Meal Count" badge to show how many items we found
     const countBadge = document.getElementById("meal-count");
     if (countBadge) {
-        countBadge.textContent = mealsList.length + " dishes";
+        countBadge.textContent = mealsToDisplay.length + " dishes";
     }
 
-    // 3. If the list is empty, show a "not found" message
-    if (mealsList.length === 0) {
-        const message = document.createElement("p");
-        message.textContent = "No dishes found. Try a different search!";
-        message.style.gridColumn = "1 / -1";
-        message.style.textAlign = "center";
-        message.style.padding = "50px";
-        message.style.color = "#999";
-        recipeContainer.appendChild(message);
-        return;
+    // 3. If there are no meals to show, display a friendly message
+    if (mealsToDisplay.length === 0) {
+        const errorMessage = document.createElement("p");
+        errorMessage.textContent = "No dishes found. Try a different search!";
+
+        // Add some styling for the error message
+        errorMessage.style.gridColumn = "1 / -1";
+        errorMessage.style.textAlign = "center";
+        errorMessage.style.padding = "50px";
+        errorMessage.style.color = "#999";
+
+        recipeContainer.appendChild(errorMessage);
+        return; // Stop the function here
     }
 
-    // 4. Create a card for each dish in the list
-    mealsList.forEach(function (dish) {
-        // Create the main card box
-        const cardBox = document.createElement("div");
-        cardBox.className = "recipe-card";
+    // 4. If we have meals, create a card for each one
+    mealsToDisplay.forEach(function (dish) {
+        // Create the main card div
+        const cardChild = document.createElement("div");
+        cardChild.className = "recipe-card";
 
-        // Create the image part
-        const imgWrapper = document.createElement("div");
-        imgWrapper.className = "recipe-image";
-        const dishImage = document.createElement("img");
-        dishImage.src = dish.strMealThumb;
-        dishImage.alt = dish.strMeal;
-        imgWrapper.appendChild(dishImage);
+        // Create the image section
+        const imagePart = document.createElement("div");
+        imagePart.className = "recipe-image";
 
-        // Create the text part
-        const textBox = document.createElement("div");
-        textBox.className = "recipe-content";
+        const cardImg = document.createElement("img");
+        cardImg.src = dish.strMealThumb;
+        cardImg.alt = dish.strMeal;
+        imagePart.appendChild(cardImg);
 
-        const categoryTag = document.createElement("p");
-        categoryTag.className = "cuisine";
-        categoryTag.textContent = dish.strCategory;
+        // Create the content section (Category, Title, Button)
+        const contentPart = document.createElement("div");
+        contentPart.className = "recipe-content";
 
-        const dishTitle = document.createElement("h3");
-        dishTitle.textContent = dish.strMeal;
+        // Category Tag
+        const categoryLabel = document.createElement("p");
+        categoryLabel.className = "cuisine";
+        categoryLabel.textContent = dish.strCategory;
 
-        // View Button
-        const btnRow = document.createElement("div");
-        btnRow.className = "recipe-det";
-        const viewBtn = document.createElement("button");
-        viewBtn.className = "view-btn";
-        viewBtn.textContent = "View →";
-        viewBtn.dataset.id = dish.idMeal; // Store ID for the modal
-        btnRow.appendChild(viewBtn);
+        // Dish Name
+        const nameHeading = document.createElement("h3");
+        nameHeading.textContent = dish.strMeal;
 
-        // Put everything together
-        textBox.appendChild(categoryTag);
-        textBox.appendChild(dishTitle);
-        textBox.appendChild(btnRow);
+        // View Button Row
+        const actionRow = document.createElement("div");
+        actionRow.className = "recipe-det";
 
-        cardBox.appendChild(imgWrapper);
-        cardBox.appendChild(textBox);
+        const openBtn = document.createElement("button");
+        openBtn.className = "view-btn";
+        openBtn.textContent = "View →";
+        openBtn.dataset.id = dish.idMeal; // Keep ID here so we know which meal was clicked
 
-        // Add the finished card to the page
-        recipeContainer.appendChild(cardBox);
+        actionRow.appendChild(openBtn);
+
+        // Assemble the content section
+        contentPart.appendChild(categoryLabel);
+        contentPart.appendChild(nameHeading);
+        contentPart.appendChild(actionRow);
+
+        // Assemble the full card
+        cardChild.appendChild(imagePart);
+        cardChild.appendChild(contentPart);
+
+        // Finally, add the card to the container on the website
+        recipeContainer.appendChild(cardChild);
     });
 }
+
 
 
 // STEP 3: SEARCH LOGIC
 
-const searchInput = document.getElementById("search-bar_input");
-const searchBtn = document.querySelector("#search_input button");
+
+const searchBar = document.getElementById("search-bar_input");
+const searchButton = document.querySelector("#search_input button");
 
 function handleSearch() {
-    const userInput = searchInput.value.trim().toLowerCase();
+    // Get the text the user typed and make it lowercase
+    const textTyped = searchBar.value.trim().toLowerCase();
 
-    // Filter the global list based on the name of the dish
-    const filteredResults = allMeals.filter(function (dish) {
+    // Use .filter to find meals that have the typed text in their name
+    const matchesFound = allMeals.filter(function (dish) {
         const dishName = dish.strMeal.toLowerCase();
-        return dishName.includes(userInput);
+
+        // If the name contains what we typed, keep it!
+        return dishName.includes(textTyped);
     });
 
-    // Show the results
-    showMeals(filteredResults);
+    // Show only the matches on the screen
+    showMeals(matchesFound);
 }
 
-// Trigger search on click
-searchBtn.addEventListener("click", handleSearch);
+// When the user clicks the search button, run the search
+searchButton.addEventListener("click", handleSearch);
 
-// Trigger search on Enter key
-searchInput.addEventListener("keydown", function (event) {
+// When the user presses "Enter" while typing, also run the search
+searchBar.addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
         handleSearch();
     }
 });
 
 
-// STEP 4: FILTER CHIPS LOGIC
 
-function buildFilterChips(mealsArray) {
-    const chipsBox = document.getElementById("filter-chips-container");
+// STEP 4: FILTER BUTTONS (CATEGORY CHIPS)
 
-    // We want a list of unique category names
-    const categoryList = [];
 
-    mealsArray.forEach(function (dish) {
-        if (dish.strCategory && !categoryList.includes(dish.strCategory)) {
-            categoryList.push(dish.strCategory);
+function buildFilterChips(allData) {
+    const parentBox = document.getElementById("filter-chips-container");
+
+    // We need a list of unique categories (no duplicates)
+    const categoryNames = [];
+
+    // Look at every meal in our data
+    allData.forEach(function (meal) {
+        const cat = meal.strCategory;
+
+        // If we haven't added this category to our list yet, add it
+        if (cat && !categoryNames.includes(cat)) {
+            categoryNames.push(cat);
         }
     });
 
-    // Sort the names alphabetically
-    categoryList.sort();
+    // Sort the category names from A to Z
+    categoryNames.sort();
 
-    // Remove any previously added dynamic chips
-    const oldChips = chipsBox.querySelectorAll(".filter-btn.dynamic");
-    oldChips.forEach(function (btn) {
+    // Remove any old buttons that we created before
+    const currentBtns = parentBox.querySelectorAll(".filter-btn.dynamic");
+    currentBtns.forEach(function (btn) {
         btn.remove();
     });
 
-    // Create a button for each category found
-    categoryList.forEach(function (catName) {
-        const chip = document.createElement("button");
-        chip.className = "filter-btn dynamic";
-        chip.textContent = catName;
-        chip.dataset.category = catName;
-        chipsBox.appendChild(chip);
+    // Create a new button for every category in our list
+    categoryNames.forEach(function (name) {
+        const newChip = document.createElement("button");
+        newChip.className = "filter-btn dynamic";
+        newChip.textContent = name;
+        newChip.dataset.category = name; // Store the category name here
+
+        parentBox.appendChild(newChip);
     });
 }
 
-// Handling chip clicks using event delegation
-const chipContainer = document.getElementById("filter-chips-container");
+// Listen for clicks on the filter buttons
+const chipParent = document.getElementById("filter-chips-container");
 
-chipContainer.addEventListener("click", function (event) {
-    const clickedElement = event.target.closest(".filter-btn");
-    if (!clickedElement) return;
+chipParent.addEventListener("click", function (event) {
+    // Check if what was clicked is actually a filter button
+    const targetBtn = event.target.closest(".filter-btn");
 
-    // Toggle active style
-    const allChips = chipContainer.querySelectorAll(".filter-btn");
-    allChips.forEach(function (btn) {
+    // If they didn't click a button, do nothing
+    if (targetBtn === null) {
+        return;
+    }
+
+    // Remove the "active" highlight from ALL buttons
+    const everyChip = chipParent.querySelectorAll(".filter-btn");
+    everyChip.forEach(function (btn) {
         btn.classList.remove("active");
     });
-    clickedElement.classList.add("active");
 
-    // Update the active category
-    activeCategory = clickedElement.dataset.category;
+    // Add the "active" highlight to the one that was clicked
+    targetBtn.classList.add("active");
 
-    // Filter and show
+    // Update our 'activeCategory' variable so we know what to show
+    activeCategory = targetBtn.dataset.category;
+
+    // Run the filter and sort logic to update the screen
     runFilterAndSort();
 });
 
 
 
-// STEP 5: SORTING LOGIC
+// STEP 5: SORTING AND SELECTING
 
-const sortSelect = document.getElementById("sort-select");
+
+const sortDropdown = document.getElementById("sort-select");
 
 function runFilterAndSort() {
-    // 1. First, filter by the current active category
-    let listToDisplay;
+    let filteredList;
 
+    // 1. Filter by Category
     if (activeCategory === "All") {
-        listToDisplay = [...allMeals]; // copy of all meals
+        // If "All" is selected, show every meal
+        filteredList = allMeals.slice(); // .slice() makes a copy of the list
     } else {
-        listToDisplay = allMeals.filter(function (dish) {
-            return dish.strCategory === activeCategory;
+        // Otherwise, only keep meals that match the picked category
+        filteredList = allMeals.filter(function (meal) {
+            return meal.strCategory === activeCategory;
         });
     }
 
-    // 2. Second, apply sorting
-    const sortValue = sortSelect.value;
+    // 2. Pick the sort order from the dropdown menu
+    const choice = sortDropdown.value;
 
-    if (sortValue === "az") {
-        // Sort A to Z
-        listToDisplay.sort(function (a, b) {
-            return a.strMeal.localeCompare(b.strMeal);
+    if (choice === "az") {
+        // Sort Names: A to Z
+        filteredList.sort(function (mealA, mealB) {
+            return mealA.strMeal.localeCompare(mealB.strMeal);
         });
-    } else if (sortValue === "za") {
-        // Sort Z to A
-        listToDisplay.sort(function (a, b) {
-            return b.strMeal.localeCompare(a.strMeal);
+    } else if (choice === "za") {
+        // Sort Names: Z to A
+        filteredList.sort(function (mealA, mealB) {
+            return mealB.strMeal.localeCompare(mealA.strMeal);
         });
-    } else if (sortValue === "category") {
-        // Sort by Category Name
-        listToDisplay.sort(function (a, b) {
-            return a.strCategory.localeCompare(b.strCategory);
+    } else if (choice === "category") {
+        // Sort Categories: A to Z
+        filteredList.sort(function (mealA, mealB) {
+            const catA = mealA.strCategory;
+            const catB = mealB.strCategory;
+            return catA.localeCompare(catB);
         });
     }
 
-    // 3. Show the final processed list
-    showMeals(listToDisplay);
+    // 3. Finally, show the processed list on the screen
+    showMeals(filteredList);
 }
 
-// Run sorting when dropdown changes
-sortSelect.addEventListener("change", runFilterAndSort);
+// Every time the dropdown selection changes, update the screen
+sortDropdown.addEventListener("change", runFilterAndSort);
 
 
-// STEP 6: DARK MODE LOGIC
 
-const modeToggle = document.getElementById("darkModeToggle");
+// STEP 6: DARK MODE TOGGLE
 
-modeToggle.addEventListener("change", function () {
-    if (modeToggle.checked === true) {
+const themeToggle = document.getElementById("darkModeToggle");
+
+// When the toggle switch changes, update the theme
+themeToggle.addEventListener("change", function () {
+    // If it is checked, add the "dark" look
+    if (themeToggle.checked === true) {
         document.body.classList.add("dark");
-        localStorage.setItem("myTheme", "dark");
+        // Save the setting so it stays when we refresh
+        localStorage.setItem("userTheme", "dark");
     } else {
+        // If not checked, remove the "dark" look (go back to light)
         document.body.classList.remove("dark");
-        localStorage.setItem("myTheme", "light");
+        localStorage.setItem("userTheme", "light");
     }
 });
 
-// Apply saved theme on reload
-const lastTheme = localStorage.getItem("myTheme");
-if (lastTheme === "dark") {
+// Check if the user had "dark" mode saved from their last visit
+const savedTheme = localStorage.getItem("userTheme");
+if (savedTheme === "dark") {
     document.body.classList.add("dark");
-    modeToggle.checked = true;
+    themeToggle.checked = true;
 }
 
 
-// STEP 7: MODAL POPUP LOGIC
-// We build the Modal HTML structure using JavaScript
-const modalOuterHtml = `
+
+// STEP 7: RECIPE POPUP (MODAL)
+
+
+// We describe how the pop-up should look in HTML
+// (This creates the box that shows up when you click "View")
+const popupHtmlCode = `
 <div id="recipe-popup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
      background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center;">
     <div style="background:#fff; border-radius:12px; padding:25px; max-width:600px; width:90%; 
                 max-height:85vh; overflow-y:auto; position:relative;">
+        
+        <!-- Close Button (The 'X') -->
         <button id="close-popup" style="position:absolute; top:10px; right:15px; background:none; 
                 border:none; font-size:30px; cursor:pointer;">&times;</button>
+        
+        <!-- Meal Details -->
         <img id="modal-img" src="" style="width:100%; border-radius:8px; margin-bottom:15px;">
         <h2 id="modal-name" style="margin-bottom:10px;"></h2>
+        
         <h4 style="color:#e63946;">Ingredients</h4>
         <ul id="modal-ingredients" style="margin-bottom:20px; line-height:1.6;"></ul>
+        
         <h4 style="color:#e63946;">Instructions</h4>
         <p id="modal-text" style="font-size:14px; line-height:1.6; color:#555;"></p>
+        
+        <!-- Video Link -->
         <a id="modal-video" href="#" target="_blank" 
            style="display:inline-block; margin-top:20px; padding:10px 20px; background:#e63946; 
                   color:#fff; border-radius:5px; text-decoration:none;">Watch on YouTube</a>
     </div>
 </div>
 `;
-document.body.insertAdjacentHTML("beforeend", modalOuterHtml);
 
-const theModal = document.getElementById("recipe-popup");
+// Add this HTML to the bottom of our web page
+document.body.insertAdjacentHTML("beforeend", popupHtmlCode);
 
-// Function to fetch more details about one meal
-async function loadDishDetails(dishId) {
-    const url = "https://www.themealdb.com/api/json/v1/1/lookup.php?i=" + dishId;
-    const response = await fetch(url);
-    const data = await response.json();
-    return data.meals[0];
-}
+const recipeModal = document.getElementById("recipe-popup");
 
-// Function to open the modal and fill it with data
-async function openModal(id) {
-    const meal = await loadDishDetails(id);
+// 1. Function to open the modal and fill it with detail's
+function openRecipeModal(mealId) {
+    // website address for meal details
+    const detailUrl = "https://www.themealdb.com/api/json/v1/1/lookup.php?i=" + mealId;
 
-    document.getElementById("modal-name").textContent = meal.strMeal;
-    document.getElementById("modal-img").src = meal.strMealThumb;
-    document.getElementById("modal-text").textContent = meal.strInstructions;
+    // Fetch the data for just this one meal
+    fetch(detailUrl)
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            const mealData = data.meals[0];
 
-    // Setup YouTube button
-    const ytBtn = document.getElementById("modal-video");
-    if (meal.strYoutube) {
-        ytBtn.href = meal.strYoutube;
-        ytBtn.style.display = "inline-block";
-    } else {
-        ytBtn.style.display = "none";
-    }
+            // Set the Title, Image, and Instructions
+            document.getElementById("modal-name").textContent = mealData.strMeal;
+            document.getElementById("modal-img").src = mealData.strMealThumb;
+            document.getElementById("modal-text").textContent = mealData.strInstructions;
 
-    // Populate Ingredients
-    const list = document.getElementById("modal-ingredients");
-    list.textContent = ""; // clear old ones
-
-    // Loop through properties using a list of keys
-    const propertyKeys = Object.keys(meal);
-    propertyKeys.forEach(function (key) {
-        // Check if property is an ingredient and has a value
-        if (key.includes("strIngredient") && meal[key]) {
-            const ingredientName = meal[key].trim();
-            if (ingredientName !== "") {
-                const num = key.replace("strIngredient", "");
-                const measure = meal["strMeasure" + num];
-
-                const listItem = document.createElement("li");
-                listItem.textContent = ingredientName + " - " + measure;
-                list.appendChild(listItem);
+            // Setup the YouTube button
+            const videoButton = document.getElementById("modal-video");
+            if (mealData.strYoutube) {
+                videoButton.href = mealData.strYoutube;
+                videoButton.style.display = "inline-block";
+            } else {
+                videoButton.style.display = "none";
             }
-        }
-    });
 
-    theModal.style.display = "flex";
+            // Populate the Ingredients list
+            const ingredientList = document.getElementById("modal-ingredients");
+            ingredientList.textContent = ""; // Clear any old ingredients
+
+            // We loop through the object keys to find ingredients
+            const allKeys = Object.keys(mealData);
+
+            allKeys.forEach(function (keyName) {
+                // If the key starts with 'strIngredient' and has a value
+                if (keyName.includes("strIngredient") && mealData[keyName]) {
+                    const itemName = mealData[keyName].trim();
+
+                    // If the ingredient name is not empty
+                    if (itemName !== "") {
+                        // Find the corresponding measurement number (e.g., strMeasure1)
+                        const number = keyName.replace("strIngredient", "");
+                        const measurement = mealData["strMeasure" + number];
+
+                        // Create a list item <li> for the ingredient
+                        const listItem = document.createElement("li");
+                        listItem.textContent = itemName + " - " + measurement;
+                        ingredientList.appendChild(listItem);
+                    }
+                }
+            });
+
+            // Show the modal by changing display to "flex"
+            recipeModal.style.display = "flex";
+        });
 }
 
-// Listen for clicks on the card buttons
+// 2. Listen for clicks on the entire page
 document.addEventListener("click", function (event) {
-    const clickedBtn = event.target.closest(".view-btn");
-    if (clickedBtn) {
-        const mealId = clickedBtn.dataset.id;
-        openModal(mealId);
+    // Check if the clicked item is a "View" button
+    const viewButton = event.target.closest(".view-btn");
+
+    if (viewButton !== null) {
+        // Get the ID we stored earlier
+        const mealId = viewButton.dataset.id;
+        // Open the modal for this ID
+        openRecipeModal(mealId);
     }
 });
 
-// Close modal logic
-document.getElementById("close-popup").addEventListener("click", function () {
-    theModal.style.display = "none";
+// 3. Logic to close the Modal
+const closeButton = document.getElementById("close-popup");
+
+// Close when 'X' is clicked
+closeButton.addEventListener("click", function () {
+    recipeModal.style.display = "none";
 });
 
+// Close when clicking outside the white box
 window.addEventListener("click", function (event) {
-    if (event.target === theModal) {
-        theModal.style.display = "none";
+    if (event.target === recipeModal) {
+        recipeModal.style.display = "none";
     }
 });
